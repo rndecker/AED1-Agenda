@@ -19,6 +19,8 @@
 //0-4 contador de contatos
 //8-12 variavel de loops
 //12-16 inteiro usado para a escolha no menu
+
+
 void* alocar(void *pBuffer);
 void inclui(void *pBuffer);
 void apaga(void *pBuffer);
@@ -39,6 +41,7 @@ int main(){
 		
 		scanf("%d", op);
 		__fpurge(stdin);
+		
 
 	
 		switch(*op){
@@ -76,8 +79,9 @@ void inclui(void *pBuffer){
 	
 	printf("\nTelefone: ");
 	fgets(pBuffer+TAMVAR+TAMNOME+TAMEND+*((int*)pBuffer)*CONTATO, TAMTEL, stdin);
+	__fpurge(stdin);
 }
-
+/*
 void* alocar(void *pBuffer){
     int *qtd;
     //qtd = pBuffer;
@@ -94,6 +98,26 @@ void* alocar(void *pBuffer){
 
     return pBuffer;
 
+}*/
+void *alocar(void *pBuffer){
+    int *qtd;
+    void *aux;
+	if(pBuffer == NULL){
+		pBuffer = (struct Pessoa*)malloc(sizeof(struct Pessoa*)+3*sizeof(int));
+		qtd = (int*)pBuffer;
+        *qtd = 1;
+	}
+	else{
+	    int *qtd;
+        qtd = (int*)pBuffer;
+        *qtd++;
+		aux = (struct Pessoa*)realloc(pBuffer, sizeof(struct Pessoa*)*(*qtd)+3*sizeof(int));
+		if(aux != NULL){
+            pBuffer = aux;
+		}
+	}
+
+    return pBuffer;
 }
 
 
