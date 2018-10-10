@@ -1,54 +1,54 @@
-//agenda com struct 
+//agenda com struct
 
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define VAR 13
+//#define VAR 12
 //0-4 contador de contatos
 //8-12 variavel de loops
 //12-16 inteiro usado para a escolha no menu
 
 struct Pessoa{
 	char nome[20];
-	int telefone;
+	char telefone[12];
 };
 
 
-struct Pessoa *pessoa;
+//struct Pessoa *pessoa;
 
-void* alocar(void *pBuffer);
-void inclui(void *pBuffer);
-void apaga(void *pBuffer);
-void busca(void *pBuffer);
-void lista(void *pBuffer);
+void* alocar();
+void inclui();
+void apaga();
+void busca();
+void lista();
 
-
+void *pBuffer;
 
 int main(){
-	printf("%d\n", sizeof(struct Pessoa));
-	void *pBuffer = NULL;
+	printf("%d\n", sizeof(struct Pessoa)); //confere o tamanho de Pessoa
+	pBuffer = NULL;
 	int *op;
-	pBuffer = alocar(pBuffer);
+	pBuffer = alocar();
 
 	op = (int*)pBuffer+8;
 	while(*op!=5){
 		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\nEscolha: ");
-		
+
 		scanf("%d", op);
 		__fpurge(stdin);
 		switch(*op){
 			case 1:
-				inclui(pBuffer);
+				inclui();
 			break;
 			case 2:
-				apaga(pBuffer);
+				apaga();
 			break;
 			case 3:
-				busca(pBuffer);
+				busca();
 			break;
 			case 4:
-				lista(pBuffer);
+				lista();
 			break;
 			case 5:
 				exit(1);
@@ -57,76 +57,74 @@ int main(){
 	}
 
 
-
+	free(pBuffer);
 	return 0;
 }
 
 
-void *alocar(void *pBuffer){
+void *alocar(){
     int *qtd;
     void *aux;
 	if(pBuffer == NULL){
-		pBuffer = (struct Pessoa*)malloc(sizeof(struct Pessoa*)+3*sizeof(int));
+		pBuffer = (struct Pessoa*)malloc(sizeof(struct Pessoa)+3*sizeof(int));
 		qtd = (int*)pBuffer;
-        *qtd = 1;
+        *qtd = 0;
 	}
 	else{
-	    int *qtd;
         qtd = (int*)pBuffer;
-        *qtd++;
-		aux = (struct Pessoa*)realloc(pBuffer, sizeof(struct Pessoa*)*(*qtd)+3*sizeof(int));
+        (*qtd)++;
+		aux = (struct Pessoa*)realloc(pBuffer, sizeof(struct Pessoa)*(*qtd)+3*sizeof(int));
+		qtd = (int*)aux;
 		if(aux != NULL){
             pBuffer = aux;
 		}
 	}
-
-    return pBuffer;
-}/*
-void *alocar(void *pBuffer){
-	int *qtd;
-	
-	if(pBuffer == NULL){
-		pBuffer = (struct Pessoa*)malloc(sizeof(struct Pessoa*)+VAR);
-		qtd = (int*)pBuffer;
-		*qtd = 0;
-		qtd++;
-
-	}
-	else{
-		*qtd++;
-		pBuffer = (struct Pessoa*)realloc(pBuffer, sizeof(struct Pessoa*)*(*qtd));
-	}
-
 	return pBuffer;
 }
-*/
-void inclui(void *pBuffer){
-	char *c;
+
+void inclui(){
+	struct Pessoa *pessoa;
+	printf("%d\n", sizeof(pessoa));
+	int *qtd;
+	qtd = (int*)pBuffer;
+	pBuffer = alocar();
+
+	pessoa = (struct Pessoa*)pBuffer+(3*sizeof(int))+(*qtd)*(sizeof(struct Pessoa));
+
+	printf("Nome: ");
+	fgets(pessoa->nome, 20*sizeof(char), stdin);
+
+	printf("Telefone: ");
+    fgets(pessoa->telefone,11*sizeof(char), stdin);
+
+    __fpurge(stdin);
+
+}
+
+void apaga(){
+	printf("ok");
+
+}
+void busca(){
+	printf("ok");
+}
+
+void lista(){
+	struct Pessoa *pessoa;
+	
+	int *qtd;
 	int *i;
-	pBuffer = alocar(pBuffer);
+	qtd = (int*)pBuffer;
+
+	pessoa = (struct Pessoa*)pBuffer+(3*sizeof(int))+(sizeof(struct Pessoa));
+
+	printf("qtd %d\n", *qtd);
 	i = (int*)pBuffer+4;
 	*i = 0;
-	c = (char*)pBuffer+13;
-	printf("Nome: ");
-	scanf("%c", c);
-	while(c != "\n"){
-		*(((char*)pBuffer)+pessoa->nome[*i]) = *c;
-		//fgets(((char*)pBuffer+pessoa->nome[*i])+sizeof(struct Pessoa), 20, stdin);
-		i++;
-		scanf("%c", c);
+	while(*i < *qtd){
+		fputs(pessoa->nome, stdout);
+        fputs(pessoa->telefone, stdout);
+       // pessoa++;
+		(*i)++;
 	}
-
-
-}
-
-void apaga(void *pBuffer){
-	printf("ok");
-
-}
-void busca(void *pBuffer){
-	printf("ok");
-}
-
-void lista(void *pBuffer){
-	printf("ok");
 }
