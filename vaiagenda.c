@@ -5,9 +5,9 @@
 #include <stdlib.h>
 
 //#define VAR 12
-//0-4 contador de contatos
-//8-12 variavel de loops
-//12-16 inteiro usado para a escolha no menu
+//0-3 contador de contatos
+//4-7 variavel de loops
+//8-11 inteiro usado para a escolha no menu
 
 struct Pessoa{
 	char nome[20];
@@ -36,7 +36,7 @@ int main(){
 		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\nEscolha: ");
 
 		scanf("%d", op);
-		__fpurge(stdin);
+		setbuf(stdin, NULL);
 		switch(*op){
 			case 1:
 				inclui();
@@ -84,20 +84,21 @@ void *alocar(){
 
 void inclui(){
 	struct Pessoa *pessoa;
-	printf("%d\n", sizeof(pessoa));
 	int *qtd;
 	qtd = (int*)pBuffer;
 	pBuffer = alocar();
 
 	pessoa = (struct Pessoa*)pBuffer+(3*sizeof(int))+(*qtd)*(sizeof(struct Pessoa));
 
-	printf("Nome: ");
-	fgets(pessoa->nome, 20*sizeof(char), stdin);
+	printf("Nome: "); 
+	fgets(pessoa->nome, 20*sizeof(char), stdin); 
+
+	//fgets((pessoa+(*qtd))->nome, 20*sizeof(char), stdin);
 
 	printf("Telefone: ");
     fgets(pessoa->telefone,11*sizeof(char), stdin);
 
-    __fpurge(stdin);
+    setbuf(stdin, NULL);
 
 }
 
@@ -111,7 +112,7 @@ void busca(){
 
 void lista(){
 	struct Pessoa *pessoa;
-	
+
 	int *qtd;
 	int *i;
 	qtd = (int*)pBuffer;
@@ -122,9 +123,10 @@ void lista(){
 	i = (int*)pBuffer+4;
 	*i = 0;
 	while(*i < *qtd){
-		fputs(pessoa->nome, stdout);
-        fputs(pessoa->telefone, stdout);
-       // pessoa++;
-		(*i)++;
+		fputs((pessoa)->nome, stdout);
+        fputs((pessoa)->telefone, stdout);
+        printf("\n");
+       //	pessoa = pessoa+ sizeof(struct Pessoa);
+       (*i)++;
 	}
 }
