@@ -126,7 +126,6 @@ void lista(){
 		fputs((pessoa)->nome, stdout);
         fputs((pessoa)->telefone, stdout);
         printf("\n");
-       //	pessoa = pessoa+ sizeof(struct Pessoa);
        (*i)++;
 	}
 }
