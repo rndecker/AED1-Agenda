@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 //#define VAR 12
 //0-3 contador de contatos
@@ -13,8 +14,6 @@ struct Pessoa{
 	char nome[20];
 	char telefone[12];
 };
-
-
 //struct Pessoa *pessoa;
 
 void* alocar();
@@ -107,7 +106,9 @@ void apaga(){
 
 }
 void busca(){
-	printf("ok");
+	printf("Nome: ");
+	fgets(pessoa->nome, 20*sizeof(char), (char*)pBuffer+3*(sizeof(int)));
+
 }
 
 void lista(){
@@ -122,10 +123,15 @@ void lista(){
 	printf("qtd %d\n", *qtd);
 	i = (int*)pBuffer+4;
 	*i = 0;
-	while(*i < *qtd){
+	//while(*i < *qtd){
+		while(*(struct Pessoa*)pBuffer != NULL){
 		fputs((pessoa)->nome, stdout);
         fputs((pessoa)->telefone, stdout);
+        printf("%s\n",   (char*) ((struct Pessoa*)pBuffer) +   sizeof(struct Pessoa)  * (*i)   + 3*sizeof(int));
+		printf("%s\n",   (char*) ((struct Pessoa*)pBuffer) +   sizeof(struct Pessoa)  * (*i)   + 3*sizeof(int) + 20*sizeof(char));
+
         printf("\n");
        (*i)++;
+       //(struct Pessoa*)pBuffer++;
 	}
 }
