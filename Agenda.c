@@ -27,14 +27,14 @@ int main(){
 	pBuffer = NULL;
 	int *op;
 	pBuffer = alocar();
-	//op = pBuffer+8;
 	do {
 		op = pBuffer+8;
 
 		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\nEscolha: ");
 
 		scanf(" %d", op);
-		setbuf(stdin, NULL);
+		setbuf(stdin, NULL); //limpar o buffer de entrada do teclado
+			
 		switch(*op){
 			case 1:
 				inclui();
@@ -99,21 +99,24 @@ void inclui(){
 }
 
 void apaga(){
+
 	busca();	
+
 	int *qtd = pBuffer;
 	int *i = pBuffer+4;
 	int *j = pBuffer+8;
 	struct Pessoa *pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
 
-	if((*i)!= 0){
-		for(*j = *i; *j < *qtd; *j++){
-			strcpy((pessoa+(*j))->nome, ((pessoa+(*j+1))->nome));
-			strcpy((pessoa+(*j))->telefone, ((pessoa+(*j+1))->telefone));
+	if((*i) >= 0){
+		for(*j = *i; *j < *qtd; (*j)++){
+			strcpy((pessoa+(*j))->nome, ((pessoa+((*j)+1))->nome));
+			strcpy((pessoa+(*j))->telefone, ((pessoa+((*j)+1))->telefone));
 		}
 		pBuffer = realloc(pBuffer, sizeof(struct Pessoa)*(*qtd)+VAR*sizeof(int));		
 		atualiza(&qtd, &i, &j);
 		(*qtd)--;
 	}
+	*j=0; //como *j aponta para o mesmo lugar que *op, essa posição recebe zero para não sair do programa quando voltar para o while
 }
 
 
