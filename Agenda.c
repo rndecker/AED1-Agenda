@@ -1,140 +1,164 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define VAR 3 //quantidade de inteiros salvos no inicio do código
+//0-3 contador de contatos
+//4-7 variavel de loops
+//8-11 inteiro usado para a escolha no menu e segunda variável de loops
+
+struct Pessoa{
+	char nome[20];
+	char telefone[12];
+};
 
 
+void* alocar();
+void inclui();
+void apaga();
+void busca();
+void lista();
+void atualiza(int **qtd, int **i, int **j);
 
-#define TAMVAR 12
-#define TAMNOME 50
-#define TAMEND 60
-#define TAMTEL 11
-
-#define CONTATO 121
-
-/* 0 - 12 duas variaveis int (QTD dada pelo usuario, contador)
-   9 - 59 primeiro nome inserido
-   60 - 120 endereco
-   121 - 132 telefone
-*/
-
-//0-4 contador de contatos
-//8-12 variavel de loops
-//12-16 inteiro usado para a escolha no menu
-
-
-void* alocar(void *pBuffer);
-void inclui(void *pBuffer);
-void apaga(void *pBuffer);
-void busca(void *pBuffer);
-void lista(void *pBuffer);
+void *pBuffer;
 
 int main(){
 
-	void *pBuffer = NULL;
+	pBuffer = NULL;
 	int *op;
+	pBuffer = alocar();
+	//op = pBuffer+8;
+	do {
+		op = pBuffer+8;
 
-	//pBuffer = malloc(TAMVAR + sizeof(void*)*3);
-	pBuffer = alocar(pBuffer);
-    op = (int*)pBuffer+8;
-   // printf("%d\n", *((int*)pBuffer));
-	while(*op != 5){
 		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\nEscolha: ");
-		
-		scanf("%d", op);
-		__fpurge(stdin);
-		
 
-	
+		scanf(" %d", op);
+		setbuf(stdin, NULL);
 		switch(*op){
 			case 1:
-	            inclui(pBuffer);
+				inclui();
 			break;
 			case 2:
-	            busca(pBuffer);
+				busca();
 			break;
 			case 3:
-	            apaga(pBuffer);
+				apaga();				
 			break;
 			case 4:
-				lista(pBuffer);
+				lista();
 			break;
 			case 5:
 				exit(1);
 			break;
 		}
-	}
+	}while(*op!=5);
 
-	return 0;
+
 	free(pBuffer);
+	return 0;
 }
 
-void inclui(void *pBuffer){
 
-	pBuffer = alocar(pBuffer);    
-	
-	printf("\nNome: ");
-	fgets(pBuffer+TAMVAR+*((int*)pBuffer)*CONTATO, TAMNOME, stdin);
-	
-	printf("\nEndereco: ");
-	fgets(pBuffer+TAMVAR+TAMNOME+*((int*)pBuffer)*CONTATO, TAMEND, stdin);
-	
-	printf("\nTelefone: ");
-	fgets(pBuffer+TAMVAR+TAMNOME+TAMEND+*((int*)pBuffer)*CONTATO, TAMTEL, stdin);
-	__fpurge(stdin);
-}
-/*
-void* alocar(void *pBuffer){
-    int *qtd;
-    //qtd = pBuffer;
-	if(pBuffer==NULL){
-		pBuffer = malloc(TAMVAR + CONTATO + sizeof(void*)*3);
-		qtd = pBuffer;
-		*qtd = 1; //contador de  registros
-	}
-	else{
-		*qtd++;	// incrementa contador de registros
-		pBuffer = realloc(pBuffer, *qtd*CONTATO+TAMVAR);
-		
-	}
-
-    return pBuffer;
-
-}*/
-void *alocar(void *pBuffer){
+void *alocar(){
     int *qtd;
     void *aux;
 	if(pBuffer == NULL){
-		pBuffer = (struct Pessoa*)malloc(sizeof(struct Pessoa*)+3*sizeof(int));
+		pBuffer = (void*)malloc(sizeof(struct Pessoa)+VAR*sizeof(int));
 		qtd = (int*)pBuffer;
-        *qtd = 1;
+        *qtd = 0;
 	}
 	else{
-	    int *qtd;
         qtd = (int*)pBuffer;
-        *qtd++;
-		aux = (struct Pessoa*)realloc(pBuffer, sizeof(struct Pessoa*)*(*qtd)+3*sizeof(int));
+        (*qtd)++;
+		aux = realloc(pBuffer, sizeof(struct Pessoa)*(*qtd + 1)+VAR*sizeof(int));
+		qtd = (int*)aux;
 		if(aux != NULL){
             pBuffer = aux;
 		}
 	}
+	return pBuffer;
+}
 
-    return pBuffer;
+void inclui(){
+	struct Pessoa *pessoa;
+	int *qtd;
+	pBuffer = alocar();
+	qtd = (int*)pBuffer;
+	pessoa = pBuffer+(VAR*sizeof(int))+(*qtd)*(sizeof(struct Pessoa));
+    
+	
+	printf("Nome: "); 
+	fgets(pessoa->nome, 20, stdin); 
+
+	printf("Telefone: ");
+    fgets(pessoa->telefone,12, stdin);
+
+    setbuf(stdin, NULL);
+
+}
+
+void apaga(){
+	busca();	
+	int *qtd = pBuffer;
+	int *i = pBuffer+4;
+	int *j = pBuffer+8;
+	struct Pessoa *pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
+
+	if((*i)!= 0){
+		for(*j = *i; *j < *qtd; *j++){
+			strcpy((pessoa+(*j))->nome, ((pessoa+(*j+1))->nome));
+			strcpy((pessoa+(*j))->telefone, ((pessoa+(*j+1))->telefone));
+		}
+		pBuffer = realloc(pBuffer, sizeof(struct Pessoa)*(*qtd)+VAR*sizeof(int));		
+		atualiza(&qtd, &i, &j);
+		(*qtd)--;
+	}
 }
 
 
+void busca(){
+	int *i = pBuffer+4;
+	int *qtd = pBuffer;
+	struct Pessoa *pessoa;
+	struct Pessoa *alvo; 
+	alvo = pBuffer+(VAR*sizeof(int));
+	pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
+	printf("Nome: ");
+	fgets(alvo->nome, 20, stdin);
+	*i = 0;
+	while(*i < *qtd){
+		if(strcmp(alvo->nome, (pessoa+(*i))->nome) == 0){
+			printf("%s", (pessoa+(*i))->nome);
+			printf("%s", (pessoa+(*i))->telefone);			
+			return;
+		}
 
-void apaga(void *pBuffer){
-	if(pBuffer == NULL)
-		printf("\nAgenda vazia\n");
-	else
-		printf("\nok\n");
+		(*i)++;
+	}
+	*i=0;
 }
 
-void busca(void *pBuffer){
-	if(pBuffer == NULL)
-		printf("\nAgenda vazia\n");
+void lista(){
+	struct Pessoa *pessoa;
+	int *qtd;
+	int *i;
+	qtd = (int*)pBuffer;
+
+	pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
+
+	i = pBuffer+4;
+	*i = 0;
+	while(*i < *qtd){
+		printf("%s", (pessoa+(*i))->nome);
+		printf("%s", (pessoa+(*i))->telefone);
+       (*i)++;
+      
+	}
 }
 
-void lista(void *pBuffer){
-	if(pBuffer == NULL)
-		printf("\nAgenda vazia\n");
+void atualiza(int **qtd, int **i, int **j){
+	*qtd = pBuffer;
+	*i = pBuffer+4 ;
+	*j = pBuffer+8;
 }
