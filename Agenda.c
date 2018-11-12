@@ -18,18 +18,20 @@ void inclui();
 void apaga();
 void busca();
 void lista();
-void atualiza(int **qtd, int **i, int **j);
+void atualiza();
 void SelectSort();
 
 
 void *pBuffer;
+int *qtd, *i, *j, *min;
 
 int main(){
 
 	pBuffer = NULL;
-	int *op;
+	int *op;			//op e j usam a mesma posicao no buffer para operacoes diferentes
 	pBuffer = alocar();
 	do {
+		atualiza();
 		op = pBuffer+8;
 
 		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\n6-Sort\nEscolha: ");
@@ -66,7 +68,7 @@ int main(){
 
 
 void *alocar(){
-    int *qtd;
+
     void *aux;
 	if(pBuffer == NULL){
 		pBuffer = (void*)malloc(sizeof(struct Pessoa)+VAR*sizeof(int));
@@ -82,12 +84,14 @@ void *alocar(){
             pBuffer = aux;
 		}
 	}
+	atualiza();
+
 	return pBuffer;
 }
 
+
 void inclui(){
 	struct Pessoa *pessoa;
-	int *qtd;
 	pBuffer = alocar();
 	qtd = (int*)pBuffer;
 	pessoa = pBuffer+(VAR*sizeof(int))+(*qtd)*(sizeof(struct Pessoa));
@@ -106,10 +110,6 @@ void inclui(){
 void apaga(){
 
 	busca();	
-
-	int *qtd = pBuffer;
-	int *i = pBuffer+4;
-	int *j = pBuffer+8;
 	struct Pessoa *pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
 
 	if((*i) >= 0){
@@ -118,7 +118,7 @@ void apaga(){
 			strcpy((pessoa+(*j))->telefone, ((pessoa+((*j)+1))->telefone));
 		}
 		pBuffer = realloc(pBuffer, sizeof(struct Pessoa)*(*qtd)+VAR*sizeof(int));		
-		atualiza(&qtd, &i, &j);
+		atualiza();
 		(*qtd)--;
 	}
 	*j=0; //como *j aponta para o mesmo lugar que *op, essa posição recebe zero para não sair do programa quando voltar para o while
@@ -126,8 +126,7 @@ void apaga(){
 
 
 void busca(){
-	int *i = pBuffer+4;
-	int *qtd = pBuffer;
+
 	struct Pessoa *pessoa;
 	struct Pessoa *alvo; 
 	alvo = pBuffer+(VAR*sizeof(int));
@@ -149,9 +148,8 @@ void busca(){
 
 void lista(){
 	struct Pessoa *pessoa;
-	int *qtd;
-	int *i;
-	qtd = (int*)pBuffer;
+
+	qtd = pBuffer;
 
 	pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
 
@@ -166,10 +164,11 @@ void lista(){
 
 }
 
-void atualiza(int **qtd, int **i, int **j){
-	*qtd = pBuffer;
-	*i = pBuffer+4 ;
-	*j = pBuffer+8;
+void atualiza(){
+	qtd = pBuffer;
+	i = pBuffer+4 ;
+	j = pBuffer+8;
+	min = pBuffer+12;
 }
 
 void SelectSort(){
@@ -177,11 +176,6 @@ void SelectSort(){
 	pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
 	struct Pessoa *aux;
 	aux = pBuffer+(VAR*sizeof(int));
-	
-	int *qtd = pBuffer;
-	int *i = pBuffer+4;
-	int *j = pBuffer+8;
-	int *min = pBuffer+12;
 
 	for(*i = 0; *i < (*qtd)-1; (*i)++){
 		*min = *i;
