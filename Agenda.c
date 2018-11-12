@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define VAR 3 //quantidade de inteiros salvos no inicio do código
+#define VAR 4 //quantidade de inteiros salvos no inicio do código
 //0-3 contador de contatos
 //4-7 variavel de loops
 //8-11 inteiro usado para a escolha no menu e segunda variável de loops
@@ -19,6 +19,8 @@ void apaga();
 void busca();
 void lista();
 void atualiza(int **qtd, int **i, int **j);
+void SelectSort();
+
 
 void *pBuffer;
 
@@ -30,7 +32,7 @@ int main(){
 	do {
 		op = pBuffer+8;
 
-		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\nEscolha: ");
+		printf("1-Inserir\n2-Buscar\n3-Apagar\n4-Listar\n5-Sair\n6-Sort\nEscolha: ");
 
 		scanf(" %d", op);
 		setbuf(stdin, NULL); //limpar o buffer de entrada do teclado
@@ -50,6 +52,9 @@ int main(){
 			break;
 			case 5:
 				exit(1);
+			break;
+			case 6:
+				SelectSort();
 			break;
 		}
 	}while(*op!=5);
@@ -158,10 +163,43 @@ void lista(){
        (*i)++;
       
 	}
+
 }
 
 void atualiza(int **qtd, int **i, int **j){
 	*qtd = pBuffer;
 	*i = pBuffer+4 ;
 	*j = pBuffer+8;
+}
+
+void SelectSort(){
+	struct Pessoa *pessoa;
+	pessoa = pBuffer+(VAR*sizeof(int))+(sizeof(struct Pessoa));
+	struct Pessoa *aux;
+	aux = pBuffer+(VAR*sizeof(int));
+	
+	int *qtd = pBuffer;
+	int *i = pBuffer+4;
+	int *j = pBuffer+8;
+	int *min = pBuffer+12;
+
+	for(*i = 0; *i < (*qtd)-1; (*i)++){
+		*min = *i;
+		for(*j = (*i)+1; *j< *qtd; (*j)++){
+			if(strcmp(((pessoa+(*min))->nome), (pessoa+(*j))->nome) > 0){
+				*min = *j;
+			}
+		}
+		if(*min != *i){
+			strcpy(aux->nome, (pessoa+(*min))->nome);
+			strcpy(aux->telefone, (pessoa+(*min))->telefone);
+			strcpy((pessoa+(*min))->nome, (pessoa+(*i))->nome);
+			strcpy((pessoa+(*min))->telefone, (pessoa+(*i))->telefone);
+			strcpy((pessoa+(*i))->nome, aux->nome);
+			strcpy((pessoa+(*i))->telefone, aux->telefone);
+		}
+	}
+	printf("\nOrdenado por Selection Sort\n\n");
+	*j = 0; //evitar erros com switch
+
 }
