@@ -6,6 +6,7 @@
 //0-3 contador de contatos
 //4-7 variavel de loops
 //8-11 inteiro usado para a escolha no menu e segunda variável de loops
+//12-15 inteiro que serve para pegar o menor indice no sort
 
 struct Pessoa{
 	char nome[20];
